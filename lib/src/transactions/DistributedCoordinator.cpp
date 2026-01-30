@@ -12,7 +12,6 @@ DistributedCoordinator::DistributedCoordinator(
 
 auto DistributedCoordinator::get_primary_node(KeyType key) const noexcept -> NodeID
 {
-    // Consistent hashing: hash the key and map to a node
     size_t hash_value = std::hash<KeyType>{}(key);
     return static_cast<NodeID>(hash_value % all_nodes.size());
 }
@@ -72,17 +71,17 @@ auto DistributedCoordinator::parse_lock_request(
         if (!msg.is_object()) {
             return false;
         }
-        
+
         const auto& obj = msg.as_object();
-        
+
         if (!obj.contains("tx_id") || !obj.contains("key") || !obj.contains("timestamp")) {
             return false;
         }
-        
+
         out_tx_id = obj.at("tx_id").as_uint64();
         out_key = static_cast<KeyType>(obj.at("key").as_int64());
         out_timestamp = obj.at("timestamp").as_uint64();
-        
+
         return true;
     } catch (...) {
         return false;
@@ -98,16 +97,16 @@ auto DistributedCoordinator::parse_lock_response(
         if (!msg.is_object()) {
             return false;
         }
-        
+
         const auto& obj = msg.as_object();
-        
+
         if (!obj.contains("tx_id") || !obj.contains("granted")) {
             return false;
         }
-        
+
         out_tx_id = obj.at("tx_id").as_uint64();
         out_granted = obj.at("granted").as_bool();
-        
+
         return true;
     } catch (...) {
         return false;

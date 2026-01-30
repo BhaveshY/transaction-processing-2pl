@@ -19,8 +19,6 @@ public:
 
     virtual ~Peer();
 
-    /** sends a message and returns the response to the message. This function
-     * is asynchronous but thread-safe **/
     auto send_receive(const boost::json::value &message)
         -> boost::asio::awaitable<JSONMessage>;
 
@@ -36,9 +34,6 @@ private:
     std::once_flag incoming_init;
     boost::asio::steady_timer ready;
 
-    // this should only be called once to catch the incoming connection from the
-    // node. The outgoing connection is established upon construction of the
-    // Peer
     void setup_incoming(std::unique_ptr<boost::asio::ip::tcp::socket> &&socket);
 
     void connect(int maxRetries = DEFAULT_CONN_RETRIES,

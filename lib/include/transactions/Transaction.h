@@ -18,12 +18,8 @@ public:
     Operation::pointer &operator[](int64_t idx);
 
     auto begin() { return ops.begin(); }
-
     auto end() { return ops.end(); }
-    
-    // Const iterators for const reference access
     auto begin() const { return ops.begin(); }
-
     auto end() const { return ops.end(); }
 };
 }

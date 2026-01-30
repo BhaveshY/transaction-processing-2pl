@@ -8,12 +8,9 @@ TransactionMessageHandler::createReply(boost::json::object &inBody,
     const std::vector<std::pair<KeyType, std::optional<ValueContainer>>> &reads)
     -> boost::json::object &
 {
-    // If reads is empty, the transaction failed or had no read operations
-    // Fill with nulls for any read operations in the transaction
     auto curRead = reads.begin();
     for (auto &opsRef = inBody.at("txn").as_array(); auto &val : opsRef) {
         if (val.as_array().at(0).as_string().compare("r") == 0) {
-            // Check if we have a result for this read
             if (curRead != reads.end() && curRead->first == val.as_array().at(1).as_int64()) {
                 if (const auto &insertArr = curRead->second) {
                     auto &arr = val.as_array().at(2).emplace_array();
@@ -22,8 +19,6 @@ TransactionMessageHandler::createReply(boost::json::object &inBody,
                     val.as_array().at(2).emplace_null();
                 ++curRead;
             } else {
-                // No result available - either transaction failed or out of sync
-                // Fill with null to indicate no value
                 val.as_array().at(2).emplace_null();
             }
         }

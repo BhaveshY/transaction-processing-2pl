@@ -6,10 +6,8 @@ auto ThreadSafeKVStore::get(KeyType key) const noexcept
     -> std::optional<ValueContainer>
 {
     auto& stripe = get_stripe(key);
-    
-    // Lock only this specific stripe - other stripes remain accessible
     std::lock_guard lock(stripe.mtx);
-    
+
     const auto& partition = stripe.partition;
     if (partition.contains(key)) {
         return partition.at(key);
@@ -20,10 +18,8 @@ auto ThreadSafeKVStore::get(KeyType key) const noexcept
 void ThreadSafeKVStore::append(KeyType key, ValueType value) noexcept
 {
     auto& stripe = get_stripe(key);
-    
-    // Lock only this specific stripe - other stripes remain accessible
     std::lock_guard lock(stripe.mtx);
-    
+
     auto& partition = stripe.partition;
     if (partition.contains(key)) {
         partition[key].push_back(value);
